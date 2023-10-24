@@ -1,7 +1,4 @@
 <p align="center">
-  <a href="https://github.com/Lishan778/hanime-api">
-    <img src="images/image1.png" alt="Logo" width="85" height="85">
-  </a>
 
   <h3 align="center">Hanime API</h3>
 
@@ -239,6 +236,3 @@ GET http://localhost:3000/watch/overflow
 }
 
 ```
-## Support This Project
-
-[![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/shaanjp)
