@@ -2,8 +2,20 @@ const express = require('express');
 const axios = require('axios');
 const crypto = require('crypto');
 const UserAgent = require('fake-useragent');
+const cors = require('cors');
 
 const app = express();
+
+// Middleware to enable CORS
+app.use((req, res, next) => {
+  res.setHeader('Access-Control-Allow-Origin', 'https://streamsora.live');
+  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
+  res.setHeader('Access-Control-Allow-Headers', 'X-Requested-With,content-type');
+  res.setHeader('Access-Control-Allow-Credentials', true);
+  next();
+});
+
+app.use(cors());
 
 const jsongen = async (url) => {
   try {
@@ -158,11 +170,11 @@ app.get('/', (req, res) => {
   res.send('Welcome to Hanime Api 👀');
 });
 
-const server = app.listen(process.env.PORT || 3000, () => {
+const server = app.listen(process.env.PORT || 3005, () => {
   const port = server.address().port;
   console.log(`Server is running on port ${port}`);
 });
 
 
 
- 
+
