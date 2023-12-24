@@ -3,17 +3,8 @@ const axios = require('axios');
 const crypto = require('crypto');
 const UserAgent = require('fake-useragent');
 const cors = require('cors');
-const { createProxyMiddleware } = require('http-proxy-middleware');
-
 const app = express();
-app.use(cors());
-
-const proxyMiddleware = createProxyMiddleware({
-  target: 'https://hanime.tv',
-  changeOrigin: true,
-});
-
-app.use('/api', proxyMiddleware);
+app.use(cors())
 
 const jsongen = async (url) => {
   try {
@@ -45,7 +36,7 @@ const getTrending = async (time, page) => {
     slug: x.slug,
     cover_url: x.cover_url,
     views: x.views,
-    link: `/api/watch/${x.slug}`,
+    link: `/watch/${x.slug}`,
   }));
   return jsondata;
 };
@@ -56,7 +47,7 @@ const getVideo = async (slug) => {
   const videoData = await jsongen(videoDataUrl);
   const tags = videoData.hentai_tags.map((t) => ({
     name: t.text,
-    link: `/api/hentai-tags/${t.text}/0`,
+    link: `/hentai-tags/${t.text}/0`,
   }));
   const streams = videoData.videos_manifest.servers[0].streams.map((s) => ({
     width: s.width,
@@ -70,7 +61,7 @@ const getVideo = async (slug) => {
     slug: e.slug,
     cover_url: e.cover_url,
     views: e.views,
-    link: `/api/watch/${e.slug}`,
+    link: `/watch/${e.slug}`,
   }));
   const jsondata = {
     id: videoData.hentai_video.id,
@@ -101,12 +92,12 @@ const getBrowseVideos = async (type, category, page) => {
     slug: x.slug,
     cover_url: x.cover_url,
     views: x.views,
-    link: `/api/watch/${x.slug}`,
+    link: `/watch/${x.slug}`,
   }));
   return jsondata;
 };
 
-app.get('/api/watch/:slug', async (req, res, next) => {
+app.get('/watch/:slug', async (req, res, next) => {
   try {
     const { slug } = req.params;
     const jsondata = await getVideo(slug);
@@ -116,24 +107,24 @@ app.get('/api/watch/:slug', async (req, res, next) => {
   }
 });
 
-app.get('/api/trending/:time/:page', async (req, res, next) => {
+app.get('/trending/:time/:page', async (req, res, next) => {
   try {
     const { time, page } = req.params;
     const jsondata = await getTrending(time, page);
-    const nextPage = `/api/trending/${time}/${parseInt(page) + 1}`;
+    const nextPage = `/trending/${time}/${parseInt(page) + 1}`;
     res.json({ results: jsondata, next_page: nextPage });
   } catch (error) {
     next(error);
   }
 });
 
-app.get('/api/browse/:type', async (req, res, next) => {
+app.get('/browse/:type', async (req, res, next) => {
   try {
     const { type } = req.params;
     const data = await getBrowse();
     let jsondata = data[type];
     if (type === 'hentai_tags') {
-      jsondata = jsondata.map((x) => ({ ...x, url: `/api/hentai-tags/${x.text}/0` }));
+      jsondata = jsondata.map((x) => ({ ...x, url: `/hentai-tags/${x.text}/0` }));
     } else if (type === 'brands') {
       jsondata = jsondata.map((x) => ({ ...x, url: `test${x.slug}/0` }));
     }
@@ -143,21 +134,21 @@ app.get('/api/browse/:type', async (req, res, next) => {
   }
 });
 
-app.get('/api/tags', async (req, res, next) => {
+app.get('/tags', async (req, res, next) => {
   try {
     const data = await getBrowse();
-    const jsondata = data.hentai_tags.map((x) => ({ ...x, url: `/api/tags/${x.text}/0` }));
+    const jsondata = data.hentai_tags.map((x) => ({ ...x, url: `/tags/${x.text}/0` }));
     res.json({ results: jsondata });
   } catch (error) {
     next(error);
   }
 });
 
-app.get('/api/:type/:category/:page', async (req, res, next) => {
+app.get('/:type/:category/:page', async (req, res, next) => {
   try {
     const { type, category, page } = req.params;
     const data = await getBrowseVideos(type, category, page);
-    const nextPage = `/api/${type}/${category}/${parseInt(page) + 1}`;
+    const nextPage = `/${type}/${category}/${parseInt(page) + 1}`;
     res.json({ results: data, next_page: nextPage });
   } catch (error) {
     next(error);
