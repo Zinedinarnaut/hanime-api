@@ -7,5 +7,6 @@
     <br />
     <a href="#routes"><strong>Explore the api »</strong></a>
     <br />
+    <p>Find more information here: https://api-services-mocha.vercel.app/</p>
   </p>
 </p>
